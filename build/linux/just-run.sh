@@ -1,7 +1,5 @@
 #!/bin/bash
-
-NV_LIB=$(locate nvidia.ko |grep $(uname -r) |grep dkms | head -1)
-NV_VER=$(modinfo $NV_LIB | grep ^version |awk '{print $2}'|awk -F '.' '{print $1}')
+#don't for get the -c flag if you want to pass the video devices
 
 DATA_FOLDER=$(pwd)/data/
 declare CAM0 CAM1 CAM2 CAM3
@@ -31,6 +29,5 @@ shift "$(($OPTIND -1))"
 printf "\n"
 
 # Warning xhost + is overly permissive and will reduce system security. Edit as desired
-docker build . -t deepfacelive --build-arg NV_VER=$NV_VER
-xhost +
-docker run --ipc host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $DATA_FOLDER:/data/ $CAM0 $CAM1 $CAM2 $CAM3  --rm -it deepfacelive /app/DeepFaceLive/example.sh
+xhost +local:
+docker run --ipc host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $DATA_FOLDER:/data/ $CAM0 $CAM1 $CAM2 $CAM3 --rm -it deepfacelive /app/DeepFaceLive/example.sh
